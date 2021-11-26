@@ -17,7 +17,7 @@ async function database() {
     }
 }
 
-const q1 = [
+const menu = [
     {
         type: 'list',
         name: 'action',
@@ -30,7 +30,7 @@ const init = async () => {
     if (!connection) {
         await database();
     }
-    const answer = await inquirer.prompt(q1);
+    const answer = await inquirer.prompt(menu);
     if (answer.action == 'quit') {
         connection.destroy();
         process.exit(0);
@@ -82,7 +82,40 @@ const init = async () => {
                 }
             ]);
             const deptId = results.find(element => element.name == roleAnswer.department);
-            const [results, fields] = await connection.execute(`INSERT INTO role (title, salary, department_id) VALUE ('${roleAnswer.newRoleName}','${roleAnswer.salary}','${deptId.id}')`);
+            const [newRoleResult, newRoleFields] = await connection.execute(`INSERT INTO role (title, salary, department_id) VALUE ('${roleAnswer.newRoleName}','${roleAnswer.salary}',${deptId.id})`);
+        } else if (answer.action == 'add an employee') {
+            const [empResults, empFields] = await connection.execute('SELECT * FROM employee');
+            const [roleResults, roleFields] = await connection.execute('SELECT * FROM role');
+            const roles = Array.from(roleResults, x => x.title);
+            const emps = Array.from(empResults, x => x.first_name + ' ' + x.last_name);
+            emps.push('None');
+            const empAnswer = await inquirer.prompt([
+                {
+                    type: 'input',
+                    name: 'empFirstName',
+                    message: 'What is the employee first name?'
+                },
+                {
+                    type: 'input',
+                    name: 'empLastName',
+                    message: 'What is the employee last name?'
+                },
+                {
+                    type: 'list',
+                    name: 'role',
+                    message: 'What is the role of this employee?',
+                    choices: roles
+                },
+                {
+                    type: 'list',
+                    name: 'manager',
+                    message: 'Who is the employee\'s manager?',
+                    choices: emps
+                }
+            ]);
+            const roleId = roleResults.find(element => element.title == empAnswer.role);
+            const managerId = empResults.find(element => (element.first_name + ' ' + element.last_name) == empAnswer.manager);
+            const [newEmpResults, newRoleFields] = await connection.execute(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE ('${empAnswer.empFirstName}','${empAnswer.empLastName}',${roleId.id},${managerId ? managerId.id : null})`);
         }
         init();
     }
