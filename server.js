@@ -153,7 +153,7 @@ const init = async () => {
             // match up the answers with the id for role and for manager
             const roleId = roleResults.find(element => element.title == updAnswer.role);
             const empId = empResults.find(element => (element.first_name + ' ' + element.last_name) == updAnswer.emp);
-            const [updResult, updFields] = await connection.execute(`UPDATE employee SET role_id=${roleId} WHERE id=${empId}`);
+            const [updResult, updFields] = await connection.execute(`UPDATE employee SET role_id=${roleId.id} WHERE id=${empId.id}`);
         }
         init();
     }
