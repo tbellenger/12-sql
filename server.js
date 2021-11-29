@@ -42,7 +42,7 @@ const init = async () => {
             console.log('\n');
         } else if (answer.action == 'view all roles') {
             // display all the roles - join on the department to get the department name
-            const [results, fields] = await connection.execute('SELECT role.id, role.title, role.salary, department.name FROM role LEFT JOIN department on role.department_id = department.id');
+            const [results, fields] = await connection.execute('SELECT role.id, role.title, role.salary, department.name AS dept FROM role LEFT JOIN department on role.department_id = department.id');
             console.table(results);
             console.log('\n');
         } else if (answer.action == 'view all employees') {
@@ -64,6 +64,7 @@ const init = async () => {
                 }
             ]);
             const [results, fields] = await connection.execute('INSERT INTO department (name) VALUE (\'' + deptAnswer.newDeptName + '\')');
+            console.log(`Added ${deptAnswer.newDeptName} to the database`);
         } else if (answer.action == 'add a role') {
             // Get a new role name and insert in the database
             const [results, fields] = await connection.execute('SELECT * FROM department');
@@ -88,6 +89,7 @@ const init = async () => {
             ]);
             const deptId = results.find(element => element.name == roleAnswer.department);
             const [newRoleResult, newRoleFields] = await connection.execute(`INSERT INTO role (title, salary, department_id) VALUE ('${roleAnswer.newRoleName}','${roleAnswer.salary}',${deptId.id})`);
+            console.log(`Added ${roleAnswer.newRoleName} to the database`);
         } else if (answer.action == 'add an employee') {
             // Get current employees and roles then 
             // use that info in the question to add the employee
@@ -127,6 +129,7 @@ const init = async () => {
             const managerId = empResults.find(element => (element.first_name + ' ' + element.last_name) == empAnswer.manager);
             // Update the database
             const [newEmpResults, newRoleFields] = await connection.execute(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE ('${empAnswer.empFirstName}','${empAnswer.empLastName}',${roleId.id},${managerId ? managerId.id : null})`);
+            console.log(`Added ${empAnswer.empFirstName + ' ' + empAnswer.empLastName} to the database`);
         } else if (answer.action == 'update an employee role') {
             // Get current employees and roles then 
             // use that info in the question to update the employee
@@ -154,6 +157,7 @@ const init = async () => {
             const roleId = roleResults.find(element => element.title == updAnswer.role);
             const empId = empResults.find(element => (element.first_name + ' ' + element.last_name) == updAnswer.emp);
             const [updResult, updFields] = await connection.execute(`UPDATE employee SET role_id=${roleId.id} WHERE id=${empId.id}`);
+            console.log(`Updated ${updAnswer.emp} with new role as ${updAnswer.role} in the database`);
         }
         init();
     }
