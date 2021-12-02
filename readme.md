@@ -7,7 +7,7 @@ An employee management system for the command line. This project uses inquirer t
 1. [Installation](#installation)
 1. [Usage](#usage)
 1. [License](#license)
-1. [Contributing](#contributing)
+1. [Walk through video](#walk-through-video)
 1. [Tests](#tests)
 1. [Questions](#questions)
 
@@ -23,8 +23,8 @@ run node server.js and follow the prompts
 [MIT License](https://mit-license.org/)
   
 
-## Contributing
-none
+## Walk through video
+[Video-Link](https://watch.screencastify.com/v/TroVlRYJclIfumubF6z6)
 
 ## Tests
 npm test
